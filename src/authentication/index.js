@@ -23,12 +23,25 @@ module.exports = class Authentication {
         password,
         name,
       };
-      request.post(url, form, (error, response, body) => {
+      request.post(url, { form }, (error, response, body) => {
         if (error) {
           reject(error);
         } else if (response.statusCode !== 201) {
           reject();
         } else {
+          if (typeof (Storage) !== 'undefined') {
+            const authUser = {
+              uid: body.user.id,
+              name: body.user.name,
+              email: body.user.email,
+              tokenManager: {
+                refreshToken: body.refreshToken,
+                accessToken: body.accessToken,
+                expirationTime: Date.now() + body.expirationTime,
+              },
+            };
+            localStorage.setItem(`fabapp:authUser:${this.config.app}`, authUser);
+          }
           resolve(body);
         }
       });
