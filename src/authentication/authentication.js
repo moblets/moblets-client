@@ -1,4 +1,5 @@
 const request = require('request');
+const LocalStorage = require('../utils/localstorage');
 
 module.exports = class Authentication {
   constructor(config) {
@@ -8,6 +9,7 @@ module.exports = class Authentication {
         this.url = 'http://nauva.universo2.local:8181';
         break;
       case 'production':
+        this.url = 'http://nauva.universo2.local:8181';
         break;
       default:
         this.url = 'http://nauva.universo2.local:8181';
@@ -24,25 +26,24 @@ module.exports = class Authentication {
         name,
       };
       request.post(url, { form }, (error, response, body) => {
+        const data = JSON.parse(body);
         if (error) {
           reject(error);
         } else if (response.statusCode !== 201) {
-          reject();
+          reject(data);
         } else {
-          if (typeof (Storage) !== 'undefined') {
-            const authUser = {
-              uid: body.user.id,
-              name: body.user.name,
-              email: body.user.email,
-              tokenManager: {
-                refreshToken: body.refreshToken,
-                accessToken: body.accessToken,
-                expirationTime: Date.now() + body.expirationTime,
-              },
-            };
-            localStorage.setItem(`fabapp:authUser:${this.config.app}`, authUser);
-          }
-          resolve(body);
+          const authUser = {
+            uid: data.user.id,
+            name: data.user.name,
+            email: data.user.email,
+            tokenManager: {
+              refreshToken: data.refresh_token,
+              accessToken: data.access_token,
+              expirationTime: Date.now() + data.expires_in,
+            },
+          };
+          LocalStorage.save(`fabapp:authUser:${this.config.app}`, authUser);
+          resolve(data);
         }
       });
     });
