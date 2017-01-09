@@ -1,4 +1,5 @@
 const request = require('request');
+const LocalStorage = require('../utils/localstorage');
 
 module.exports = class Authentication {
   constructor(config) {
@@ -13,6 +14,7 @@ module.exports = class Authentication {
       default:
         this.url = 'http://nauva.universo2.local:8181';
     }
+    this.currentUser = LocalStorage.get(`fabapp:authUser:${this.config.app}`);
   }
 
   get(user) {
