@@ -1,7 +1,14 @@
 const request = require('request');
 const LocalStorage = require('../utils/localstorage');
 
-module.exports = class Database {
+/** Database manipulation */
+const Database = class Database {
+  /**
+   * Constructor
+   * @param {Object} config - Config object.
+   * @param {string} config.environment - App environment.
+   * @param {string} config.app - App id.
+   */
   constructor(config) {
     this.config = config;
     switch (config.environment) {
@@ -16,6 +23,11 @@ module.exports = class Database {
     }
   }
 
+  /**
+   * Retrieve data
+   * @param {string} path - Path to the item.
+   * @return {promise} p.
+   */
   get(path) {
     return new Promise((resolve, reject) => {
       const url = `${this.url}/app/${this.config.app}/instances/${path}`;
@@ -37,6 +49,12 @@ module.exports = class Database {
     });
   }
 
+  /**
+   * Add new item
+   * @param {string} path - Path to the item.
+   * @param {object} data - Item data.
+   * @return {promise} p.
+   */
   push(path, data = {}) {
     return new Promise((resolve, reject) => {
       const options = {
@@ -66,6 +84,12 @@ module.exports = class Database {
     });
   }
 
+  /**
+   * Update an existing item
+   * @param {string} path - Path to the item.
+   * @param {object} data - Item data.
+   * @return {promise} p.
+   */
   update(path, data = {}) {
     return new Promise((resolve, reject) => {
       const options = {
@@ -95,6 +119,11 @@ module.exports = class Database {
     });
   }
 
+  /**
+   * Remove all data from the location
+   * @param {string} path - Path to the item.
+   * @return {promise} p.
+   */
   remove(path) {
     return new Promise((resolve, reject) => {
       const options = {
@@ -121,3 +150,5 @@ module.exports = class Database {
     });
   }
 };
+
+module.exports = Database;

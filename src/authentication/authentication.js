@@ -1,8 +1,15 @@
 const request = require('request');
 const LocalStorage = require('../utils/localstorage');
 
-module.exports = class Authentication {
-  constructor(config, user) {
+/** Authentication manipulation */
+const Authentication = class Authentication {
+  /**
+   * Constructor
+   * @param {Object} config - Config object.
+   * @param {string} config.environment - App environment.
+   * @param {string} config.app - App id.
+   */
+  constructor(config) {
     this.config = config;
     switch (config.environment) {
       case 'dev':
@@ -14,9 +21,15 @@ module.exports = class Authentication {
       default:
         this.url = 'http://nauva.universo2.local:8181';
     }
-    this.currentUser = user;
   }
 
+  /**
+   * Create new user with email and password
+   * @param {string} email - User email.
+   * @param {number} password - User password.
+   * @param {string} name - User name.
+   * @return {Promise} p.
+   */
   createUserWithEmailAndPassword(email, password, name) {
     return new Promise((resolve, reject) => {
       const url = `${this.url}/v1/app/${this.config.app}/register`;
@@ -50,6 +63,11 @@ module.exports = class Authentication {
     });
   }
 
+  /**
+   * Sign in the user with facebook
+   * @param {string} facebookUserAccessToken - Facebook user access token.
+   * @return {Promise} p.
+   */
   signInWithFacebook(facebookUserAccessToken) {
     return new Promise((resolve, reject) => {
       const url = `${this.url}/v1/app/${this.config.app}/facebook`;
@@ -81,6 +99,12 @@ module.exports = class Authentication {
     });
   }
 
+  /**
+   * Sign in the user with email and password
+   * @param {string} email - User email.
+   * @param {number} password - User password.
+   * @return {Promise} p.
+   */
   signWithEmailAndPassword(email, password) {
     return new Promise((resolve, reject) => {
       const url = `${this.url}/v1/app/${this.config.app}/login`;
@@ -113,14 +137,19 @@ module.exports = class Authentication {
     });
   }
 
-  signOut(email) {
+  /**
+   * Log out the user
+   * @return {Promise} p.
+   */
+  signOut() {
     return new Promise((resolve, reject) => {
       const url = `${this.url}/v1/app/${this.config.app}/logout`;
+      const user = LocalStorage.get(`fabapp:authUser:${this.config.app}`);
       const form = {
-        email,
+        email: user.email,
       };
       const headers = {
-        Authorization: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbmF1dmEubG9jYWwuZmFicmljYWRlYXBsaWNhdGl2b3MuY29tLmJyIiwiYXVkIjoiYmFzZS1pb25pYy1wcm9qZWN0IiwiZGF0YSI6IjIzMDZiM2E5ZTZlZTM0MzE1MmFiYWM4Njk2M2YwZjVkZDBlNjI0YjI4ODA3Y2ZkMzc1Njk4NmRlYWVmZDA4YmEwMDJkYTA2OGY5NGJkYWJhZTI1NzY3YmRhNzk4YTNkNjA2YmNmM2E3ZmMzMjE4NzBmYTEwNjkxN2FhOGIxNmUzMDRhM2NjZjhhYmZjYmM1OGY2NzkyMzM0MzI0ZjhmY2YiLCJpYXQiOjE0Nzg2MDU3MjUsImV4cCI6MTQ3ODYwOTMyNX0.T4dnMjZIIaR91WSvH3qKNFpvD46_n8BLsDBAWZmSBlGJyfKMerh_6LOrZJ-mK5-4KQKSVOkPYE5LNLF6G822famTGaEYL3GM_soyR5thfMl9VG0CHUTXhzQ70mW6wD_eOBPfjpBRwlFCt0xholmSabxX6Qpt1NPHz4MvDeH6HXWa8jmGIMqUOFVikq3nJzJdDPASi3VxQoqo6BZXKidvfQXjZCsfgA2CPsBv1KZZoaU0FVUMHKMgbYw7zCPJHeVYNU4aQXUzG9Kbt7f5gwGn46HTE9O15YQ5BVlJeI2PPTSfcbCtQ-FPP6TSdvOkzVpoWAg49pfGRSLuMfzc8nb0tA',
+        Authorization: `Bearer ${user.tokenManager.accessToken}`,
       };
       request.post(url, { form }, { headers }, (error, response, body) => {
         const data = JSON.parse(body);
@@ -129,9 +158,12 @@ module.exports = class Authentication {
         } else if (response.statusCode !== 200) {
           reject(data);
         } else {
+          LocalStorage.save(`fabapp:authUser:${this.config.app}`, '');
           resolve(data);
         }
       });
     });
   }
 };
+
+module.exports = Authentication;
