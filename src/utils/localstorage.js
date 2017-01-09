@@ -9,6 +9,6 @@ module.exports = class LocalStorage {
     if (typeof (Storage) !== 'undefined') {
       return JSON.parse(localStorage.getItem(key));
     }
-    return false;
+    return null;
   }
 };

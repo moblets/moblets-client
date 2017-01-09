@@ -1,5 +1,5 @@
 const request = require('request');
-const LocalStorage = require('../utils/localstorage');
+const Jwt = require('../utils/jwt');
 
 /** Database manipulation */
 const Database = class Database {
@@ -21,6 +21,7 @@ const Database = class Database {
       default:
         this.url = 'http://localhost:8282';
     }
+    this.jwt = new Jwt(this.config);
   }
 
   /**
@@ -30,21 +31,30 @@ const Database = class Database {
    */
   get(path) {
     return new Promise((resolve, reject) => {
-      const url = `${this.url}/app/${this.config.app}/instances/${path}`;
-      request(url, (error, response, body) => {
-        let bodyParsed;
-        try {
-          bodyParsed = JSON.parse(body);
-        } catch (e) {
-          reject(body);
-        }
-        if (error) {
-          reject(error);
-        } else if (response.statusCode !== 200) {
-          reject(bodyParsed);
-        } else {
-          resolve(bodyParsed);
-        }
+      this.jwt.getAccessToken().then((accessToken) => {
+        const options = {
+          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+        request.get(options, (error, response, body) => {
+          let bodyParsed;
+          try {
+            bodyParsed = JSON.parse(body);
+          } catch (e) {
+            reject(body);
+          }
+          if (error) {
+            reject(error);
+          } else if (response.statusCode !== 200) {
+            reject(bodyParsed);
+          } else {
+            resolve(bodyParsed);
+          }
+        });
+      }).catch((error) => {
+        reject(error);
       });
     });
   }
@@ -57,29 +67,33 @@ const Database = class Database {
    */
   push(path, data = {}) {
     return new Promise((resolve, reject) => {
-      const options = {
-        url: `${this.url}/app/${this.config.app}/instances/${path}`,
-        form: {
-          data: JSON.stringify(data),
-        },
-        headers: {
-          Authorization: `Bearer ${LocalStorage.get(`fabapp:authUser:${this.config.app}`).tokenManager.accessToken}`,
-        },
-      };
-      request.post(options, (error, response, body) => {
-        let bodyParsed;
-        try {
-          bodyParsed = JSON.parse(body);
-        } catch (e) {
-          reject(body);
-        }
-        if (error) {
-          reject(error);
-        } else if (response.statusCode !== 201) {
-          reject(bodyParsed);
-        } else {
-          resolve(bodyParsed);
-        }
+      this.jwt.getAccessToken().then((accessToken) => {
+        const options = {
+          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          form: {
+            data: JSON.stringify(data),
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+        request.post(options, (error, response, body) => {
+          let bodyParsed;
+          try {
+            bodyParsed = JSON.parse(body);
+          } catch (e) {
+            reject(body);
+          }
+          if (error) {
+            reject(error);
+          } else if (response.statusCode !== 201) {
+            reject(bodyParsed);
+          } else {
+            resolve(bodyParsed);
+          }
+        });
+      }).catch((error) => {
+        reject(error);
       });
     });
   }
@@ -92,29 +106,33 @@ const Database = class Database {
    */
   update(path, data = {}) {
     return new Promise((resolve, reject) => {
-      const options = {
-        url: `${this.url}/app/${this.config.app}/instances/${path}`,
-        form: {
-          data: JSON.stringify(data),
-        },
-        headers: {
-          Authorization: `Bearer ${LocalStorage.get(`fabapp:authUser:${this.config.app}`).tokenManager.accessToken}`,
-        },
-      };
-      request.put(options, (error, response, body) => {
-        let bodyParsed;
-        try {
-          bodyParsed = JSON.parse(body);
-        } catch (e) {
-          reject(body);
-        }
-        if (error) {
-          reject(error);
-        } else if (response.statusCode !== 200) {
-          reject(bodyParsed);
-        } else {
-          resolve(bodyParsed);
-        }
+      this.jwt.getAccessToken().then((accessToken) => {
+        const options = {
+          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          form: {
+            data: JSON.stringify(data),
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+        request.put(options, (error, response, body) => {
+          let bodyParsed;
+          try {
+            bodyParsed = JSON.parse(body);
+          } catch (e) {
+            reject(body);
+          }
+          if (error) {
+            reject(error);
+          } else if (response.statusCode !== 200) {
+            reject(bodyParsed);
+          } else {
+            resolve(bodyParsed);
+          }
+        });
+      }).catch((error) => {
+        reject(error);
       });
     });
   }
@@ -126,26 +144,30 @@ const Database = class Database {
    */
   remove(path) {
     return new Promise((resolve, reject) => {
-      const options = {
-        url: `${this.url}/app/${this.config.app}/instances/${path}`,
-        headers: {
-          Authorization: `Bearer ${LocalStorage.get(`fabapp:authUser:${this.config.app}`).tokenManager.accessToken}`,
-        },
-      };
-      request.delete(options, (error, response, body) => {
-        let bodyParsed;
-        try {
-          bodyParsed = JSON.parse(body);
-        } catch (e) {
-          reject(body);
-        }
-        if (error) {
-          reject(error);
-        } else if (response.statusCode !== 204) {
-          reject(bodyParsed);
-        } else {
-          resolve();
-        }
+      this.jwt.getAccessToken().then((accessToken) => {
+        const options = {
+          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+        request.delete(options, (error, response, body) => {
+          let bodyParsed;
+          try {
+            bodyParsed = JSON.parse(body);
+          } catch (e) {
+            reject(body);
+          }
+          if (error) {
+            reject(error);
+          } else if (response.statusCode !== 204) {
+            reject(bodyParsed);
+          } else {
+            resolve();
+          }
+        });
+      }).catch((error) => {
+        reject(error);
       });
     });
   }

@@ -1,5 +1,6 @@
 const request = require('request');
 const LocalStorage = require('../utils/localstorage');
+const jwtDecode = require('jwt-decode');
 
 /** Authentication manipulation */
 const Authentication = class Authentication {
@@ -53,7 +54,7 @@ const Authentication = class Authentication {
             tokenManager: {
               refreshToken: data.refresh_token,
               accessToken: data.access_token,
-              expirationTime: Date.now() + data.expires_in,
+              expirationTime: new Date(jwtDecode(data.access_token).exp * 1000),
             },
           };
           LocalStorage.save(`fabapp:authUser:${this.config.app}`, authUser);
@@ -89,7 +90,7 @@ const Authentication = class Authentication {
             tokenManager: {
               refreshToken: data.refresh_token,
               accessToken: data.access_token,
-              expirationTime: Date.now() + data.expires_in,
+              expirationTime: new Date(jwtDecode(data.access_token).exp * 1000),
             },
           };
           LocalStorage.save(`fabapp:authUser:${this.config.app}`, authUser);
@@ -127,7 +128,7 @@ const Authentication = class Authentication {
             tokenManager: {
               refreshToken: data.refresh_token,
               accessToken: data.access_token,
-              expirationTime: Date.now() + data.expires_in,
+              expirationTime: new Date(jwtDecode(data.access_token).exp * 1000),
             },
           };
           LocalStorage.save(`fabapp:authUser:${this.config.app}`, authUser);
