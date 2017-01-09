@@ -19,7 +19,7 @@ const Database = class Database {
    * @param {string} path - Path to the item.
    * @return {promise} p.
    */
-  get(path) {
+  get(path, query = {}) {
     return new Promise((resolve, reject) => {
       this.jwt.getAccessToken().then((accessToken) => {
         const options = {
@@ -27,6 +27,7 @@ const Database = class Database {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
+          qs: query,
         };
         request.get(options, (error, response, body) => {
           let bodyParsed;

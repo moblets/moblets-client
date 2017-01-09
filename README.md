@@ -19,13 +19,27 @@ There are some paths to retrieve the data:
 
 ```js
 // Get all collections from the moblet
-const collections = this.moblets.database.get('/collections');
+this.moblets.database.get('/collections').then((response)) => {
+  console.log(response);
+};
 
 // Get all data from a collection
-const collection = this.moblets.database.get('/collections/:collection/data');
+this.moblets.database.get('/collections/:collection/data').then((response)) => {
+  console.log(response);
+};
+
+// Query data from a collection
+const query = {
+  name: 'findName'
+}
+this.moblets.database.get('/collections/:collection/data', query).then((response)) => {
+  console.log(response);
+};
 
 // Get a specific data inside a collection
-const data = this.moblets.database.get('/collections/:collection/data/:id');
+this.moblets.database.get('/collections/:collection/data/:id').then((response)) => {
+  console.log(response);
+};
 ```
 
 #### Saving data
