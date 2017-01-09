@@ -11,16 +11,6 @@ const Database = class Database {
    */
   constructor(config) {
     this.config = config;
-    switch (config.environment) {
-      case 'dev':
-        this.url = 'http://daia.universo2.local:8282';
-        break;
-      case 'production':
-        this.url = 'http://daia.universo2.local:8282';
-        break;
-      default:
-        this.url = 'http://localhost:8282';
-    }
     this.jwt = new Jwt(this.config);
   }
 
@@ -33,7 +23,7 @@ const Database = class Database {
     return new Promise((resolve, reject) => {
       this.jwt.getAccessToken().then((accessToken) => {
         const options = {
-          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          url: `${this.config.daia}/app/${this.config.app}/instances/${path}`,
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -69,7 +59,7 @@ const Database = class Database {
     return new Promise((resolve, reject) => {
       this.jwt.getAccessToken().then((accessToken) => {
         const options = {
-          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          url: `${this.config.daia}/app/${this.config.app}/instances/${path}`,
           form: {
             data: JSON.stringify(data),
           },
@@ -108,7 +98,7 @@ const Database = class Database {
     return new Promise((resolve, reject) => {
       this.jwt.getAccessToken().then((accessToken) => {
         const options = {
-          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          url: `${this.config.daia}/app/${this.config.app}/instances/${path}`,
           form: {
             data: JSON.stringify(data),
           },
@@ -146,7 +136,7 @@ const Database = class Database {
     return new Promise((resolve, reject) => {
       this.jwt.getAccessToken().then((accessToken) => {
         const options = {
-          url: `${this.url}/app/${this.config.app}/instances/${path}`,
+          url: `${this.config.daia}/app/${this.config.app}/instances/${path}`,
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },

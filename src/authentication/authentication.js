@@ -12,16 +12,6 @@ const Authentication = class Authentication {
    */
   constructor(config) {
     this.config = config;
-    switch (config.environment) {
-      case 'dev':
-        this.url = 'http://nauva.universo2.local:8181';
-        break;
-      case 'production':
-        this.url = 'http://nauva.universo2.local:8181';
-        break;
-      default:
-        this.url = 'http://nauva.universo2.local:8181';
-    }
   }
 
   /**
@@ -33,7 +23,7 @@ const Authentication = class Authentication {
    */
   createUserWithEmailAndPassword(email, password, name) {
     return new Promise((resolve, reject) => {
-      const url = `${this.url}/v1/app/${this.config.app}/register`;
+      const url = `${this.config.nauva}/v1/app/${this.config.app}/register`;
       const form = {
         client_id: this.config.clientId,
         email,
@@ -71,7 +61,7 @@ const Authentication = class Authentication {
    */
   signInWithFacebook(facebookUserAccessToken) {
     return new Promise((resolve, reject) => {
-      const url = `${this.url}/v1/app/${this.config.app}/facebook`;
+      const url = `${this.config.nauva}/v1/app/${this.config.app}/facebook`;
       const form = {
         client_id: this.config.clientId,
         access_token: facebookUserAccessToken,
@@ -108,7 +98,7 @@ const Authentication = class Authentication {
    */
   signWithEmailAndPassword(email, password) {
     return new Promise((resolve, reject) => {
-      const url = `${this.url}/v1/app/${this.config.app}/login`;
+      const url = `${this.config.nauva}/v1/app/${this.config.app}/login`;
       const form = {
         client_id: this.config.clientId,
         email,
@@ -144,7 +134,7 @@ const Authentication = class Authentication {
    */
   signOut() {
     return new Promise((resolve, reject) => {
-      const url = `${this.url}/v1/app/${this.config.app}/logout`;
+      const url = `${this.config.nauva}/v1/app/${this.config.app}/logout`;
       const user = LocalStorage.get(`fabapp:authUser:${this.config.app}`);
       const form = {
         email: user.email,

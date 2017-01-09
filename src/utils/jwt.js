@@ -9,16 +9,6 @@ module.exports = class JWT {
 
   constructor(config) {
     this.config = config;
-    switch (config.environment) {
-      case 'dev':
-        this.url = 'http://nauva.universo2.local:8181';
-        break;
-      case 'production':
-        this.url = 'http://nauva.universo2.local:8181';
-        break;
-      default:
-        this.url = 'http://nauva.universo2.local:8181';
-    }
   }
 
   getAccessToken() {
@@ -30,7 +20,7 @@ module.exports = class JWT {
         resolve(user.tokenManager.accessToken);
       } else {
         const options = {
-          url: `${this.url}/v1/app/${this.config.app}/users/${user.uid}/access_token`,
+          url: `${this.config.nauva}/v1/app/${this.config.app}/users/${user.uid}/access_token`,
           form: {
             client_id: this.config.clientId,
             refresh_token: user.tokenManager.refreshToken,
